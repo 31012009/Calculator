@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Retail Calcutor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="author" href="humans.txt">
+    <style type="text/css" media="screen">
+    body {
+        margin: 0;
+        background: #ff5721;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    main {
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+        align-items: center;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 600px;
+        padding: 30px;
+        border-radius: 5px;
+        background: #ffffff;
+        box-shadow: 0 0 10px #ddd;
+        margin: 0 auto;
+    }
+
+    h1 {
+        color: #ff5721;
+        font-size: 18px;
+        margin: 0;
+        padding: 0 0 15px;
+        font-weight: 600;
+    }
+
+    input,
+    select {
+        padding: 10px;
+        font-size: 16px;
+        color: #000;
+        font-weight: 600;
+        margin: 0;
+        width: 100%;
+    }
+
+    label {
+        font-size: 14px;
+        color: #ff5721;
+        display: block;
+        width: 100%;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .mrp-box,
+    .converter-box {
+        display: flex;
+        margin: 15px 0;
+
+    }
+
+    .mrp-box>div:first-child {
+        width: calc(100% - 130px);
+    }
+
+    .converter-box {
+        justify-content: space-between;
+    }
+
+    .converter-box>div:first-child {
+        width: calc(100% - 130px);
+    }
+
+    .converter-box>div:first-child input[type="number"] {
+        width: calc(100% - 100px);
+    }
+
+    .converter-box>div:first-child input[type="text"] {
+        width: 100px;
+        float: right;
+    }
+
+    .error {
+        border-color: red;
+    }
+
+    @media(max-width:500px) {
+        .converter-box>div:first-child {
+            width: calc(100% - -120px);
+        }
+
+        .converter-box>div:first-child input[type="number"] {
+            width: calc(100% - 80px);
+        }
+
+        .converter-box>div:first-child input[type="text"] {
+            width: 80px;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="container">
+            <h1>Retail Calculator</h1>
+            <div class="mrp-box">
+                <div>
+                    <label for="mrp">Price</label>
+                    <input type="number" name="mrp" value="" placeholder="MRP" id="mrp">
+                </div>
+                <div>
+                    <label for="weight">Weight</label>
+                    <select name="weight" id="weight">
+                        <option value="1">Per Kilo</option>
+                        <option value="100">Per Quintal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="converter-box">
+                <div>
+                    <label for="retailweight">Weight</label>
+                    <input type="number" name="retailweight" value="" placeholder="Weight" id="retailweight">
+                    <input type="text" name="retailweightType" value="" id="retailweightType" disabled="true" placeholder="Kg">
+                </div>
+                <div>
+                    <label for="price">Rupees</label>
+                    <input type="number" name="price" value="" placeholder="Price" id="price">
+                </div>
+            </div>
+            <p><strong>Note*</strong> Weight in gram start with <strong>(.)</strong> .500 = 500 Grams, .05 = 50 Grams</p>
+            <p><strong>Note*</strong> 1.000 KG = 1 KG</p>
+        </div>
+    </main>
+    <script>
+    let MRP = document.getElementById('mrp');
+    let WEIGHT = document.getElementById('weight');
+    let RETAILWEIGHT = document.getElementById('retailweight');
+    let PRICE = document.getElementById('price');
+    let WEIGHTTYPE = document.getElementById('retailweightType');
+
+    // retailweight
+    RETAILWEIGHT.addEventListener('keyup', updateRetailPrice);
+    PRICE.addEventListener('keyup', updateWeight)
+    MRP.addEventListener('keyup', function() {
+        updateRetailPrice();
+    });
+    WEIGHT.addEventListener('change', function() {
+        updateRetailPrice();
+    });
+    // Retai Prise besed on weight 
+    function updateRetailPrice(e) {
+        if (MRP.value == '') {
+            MRP.classList = 'error'
+        } else {
+            MRP.classList.remove('error');
+            let CalPrice = (RETAILWEIGHT.value % 1000) * MRP.value;
+            if (RETAILWEIGHT.value != '') {
+                PRICE.value = CalPrice.toFixed(2);
+            }else{
+            	PRICE.value = '';
+            }
+            if (RETAILWEIGHT.value > 99) {
+                alert("Maximum 99 KG");
+                RETAILWEIGHT.value = '';
+                PRICE.value = '';
+            }
+            if (RETAILWEIGHT.value.startsWith('.')) {
+                WEIGHTTYPE.value = "gram's";
+            } else {
+                WEIGHTTYPE.value = "KG";
+            }
+        }
+    }
+    // Update Weight besd on updateRetailPrice
+    function updateWeight() {
+        if (MRP.value == '') {
+            MRP.classList = 'error'
+        } else {
+            MRP.classList.remove('error');
+            if (PRICE.value != '') {
+                var retail = (1000 / MRP.value) * PRICE.value;
+                if (retail < 1000) {
+                    RETAILWEIGHT.value = '.'+retail.toFixed(0);
+                    WEIGHTTYPE.value = "gram's";
+                } else {
+                    RETAILWEIGHT.value = (retail / 1000).toFixed(3);
+                    WEIGHTTYPE.value = "KG";
+                }
+
+            } else {
+                RETAILWEIGHT.value = '';
+            }
+        }
+    }
+    </script>
+</body>
+
+</html>
